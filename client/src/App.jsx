@@ -124,23 +124,15 @@ function App() {
   const removeFavorite = async(id)=> {
     const response = await fetch(`/api/users/${auth.id}/favorites/${id}`, {
       method: 'DELETE',
-
       headers: {
         authorization: window.localStorage.getItem('token')
       }
     });
-
-    if(response.ok){
       setFavorites(favorites.filter(favorite => favorite.id !== id));
     }
-    else {
-      console.log(json);
-    }
-  }
-
-  const logout = ()=> {
-    window.localStorage.removeItem('token');
-    setAuth({});
+    const logout = ()=> {
+      window.localStorage.removeItem('token');
+      setAuth({});
   };
 
   return (
