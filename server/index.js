@@ -20,6 +20,7 @@ const path = require('path');
 app.get('/', (req, res)=> res.sendFile(path.join(__dirname, '../client/dist/index.html')));
 app.use('/assets', express.static(path.join(__dirname, '../client/dist/assets'))); 
 
+// check if user is logged in
 const isLoggedIn = async(req, res, next)=> {
   try {
     req.user = await findUserByToken(req.headers.authorization);
@@ -30,6 +31,7 @@ const isLoggedIn = async(req, res, next)=> {
   }
 };
 
+// user auth
 app.post('/api/auth/login', async(req, res, next)=> {
   try {
     res.send(await authenticate(req.body));
@@ -39,6 +41,7 @@ app.post('/api/auth/login', async(req, res, next)=> {
   }
 });
 
+// retrieves user information
 app.get('/api/auth/me', isLoggedIn, async(req, res, next)=> {
   try {
     res.send(await findUserWithToken(req.headers.authorization));
@@ -48,6 +51,7 @@ app.get('/api/auth/me', isLoggedIn, async(req, res, next)=> {
   }
 });
 
+// retrieves all users
 app.get('/api/users', async(req, res, next)=> {
   try {
     res.send(await fetchUsers());
@@ -57,6 +61,7 @@ app.get('/api/users', async(req, res, next)=> {
   }
 });
 
+// retrieves favorites for a specifc user
 app.get('/api/users/:id/favorites', isLoggedIn, async(req, res, next)=> {
   try {
     res.send(await fetchFavorites(req.params.id));
@@ -66,6 +71,7 @@ app.get('/api/users/:id/favorites', isLoggedIn, async(req, res, next)=> {
   }
 });
 
+// creates a favorite for a user
 app.post('/api/users/:id/favorites', isLoggedIn, async(req, res, next)=> {
   try {
     res.status(201).send(await createFavorite({ user_id: req.params.id, product_id: req.body.product_id}));
@@ -75,6 +81,7 @@ app.post('/api/users/:id/favorites', isLoggedIn, async(req, res, next)=> {
   }
 });
 
+// deletes a favorite of a user
 app.delete('/api/users/:user_id/favorites/:id', isLoggedIn, async(req, res, next)=> {
   try {
     await destroyFavorite({user_id: req.params.user_id, id: req.params.id });
@@ -85,6 +92,7 @@ app.delete('/api/users/:user_id/favorites/:id', isLoggedIn, async(req, res, next
   }
 });
 
+// retrieves all products
 app.get('/api/products', async(req, res, next)=> {
   try {
     res.send(await fetchProducts());
@@ -99,6 +107,7 @@ app.use((err, req, res, next)=> {
   res.status(err.status || 500).send({ error: err.message ? err.message : err });
 });
 
+// init function 
 const init = async()=> {
   const port = process.env.PORT || 3000;
   await client.connect();
@@ -127,5 +136,6 @@ const init = async()=> {
   app.listen(port, ()=> console.log(`listening on port ${port}`));
 };
 
+// invoke init function
 init();
 
