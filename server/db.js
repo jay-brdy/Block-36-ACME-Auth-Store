@@ -18,7 +18,7 @@ const createTables = async () => {
     );
     CREATE TABLE products(
       id UUID PRIMARY KEY,
-      name VARCHAR(20)
+      name VARCHAR(20) UNIQUE NOT NULL
     );
     CREATE TABLE favorites(
       id UUID PRIMARY KEY,
